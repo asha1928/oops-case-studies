@@ -1,0 +1,105 @@
+E-COMMERCE SYSTEM ----CASE STUDY(oops)
+
+Design an e-commerce system that manages products,customers,shopping carts,and order processing.The system should allow customers tobrowse products,add items to 
+to their cart,place orders,and process payments.
+
+SYSTEM REQUIREMENTS:
+ 
+1.USERS & ROLES
+->CUSTOMER : browse produvts,add items to cart,place orders.
+->Admins   :add or update  products and manage inventory. 
+
+2.products & categories
+
+->PRODUCTS : like electronics,clothing,books.
+categories :name,price,stock quantity,sizes,colors.
+
+3.SHOPPING CART
+
+->customers can add or remove the products from the cart.
+->the cart calculates the total price.
+
+4.ORDERS & PAYMENTS
+
+->customers can place an order with multiple items.
+->orders should have status like pending,shipped,delivered.
+->payment methods :phone pay,credit pay,COD.             
+
+KEY OOPS CONCEPTS USED ARE:
+1.encapsulation:keep product details private and access them through methods.
+2.inheritance:different types of products inherit from a base product class.
+3.polymorphism:different payment methods have their own implementation.
+
+CODE BASED ON THE NEEDS IN AN E-COMMERCE SYSTEM:
+
+class Product:
+    def _init_(self, name, price, stock):
+        self.name = name
+        self.price = price
+        self.stock = stock
+
+    def update_stock(self, quantity):
+        if quantity <= self.stock:
+            self.stock -= quantity
+        else:
+            print("Not enough stock available.")
+
+class Electronics(Product):
+    def _init_(self, name, price, stock, brand):
+        super()._init_(name, price, stock)
+        self.brand = brand
+
+class Clothing(Product):
+    def _init_(self, name, price, stock, size):
+        super()._init_(name, price, stock)
+        self.size = size
+
+class ShoppingCart:
+    def _init_(self):
+        self.items = []
+
+    def add_item(self, product, quantity):
+        if product.stock >= quantity:
+            self.items.append((product, quantity))
+            product.update_stock(quantity)
+        else:
+            print("Not enough stock available.")
+
+    def total_price(self):
+        return sum(product.price * quantity for product, quantity in self.items)
+
+class Order:
+    def _init_(self, cart):
+        self.products = cart.items
+        self.status = "Pending"
+
+    def process_order(self):
+        self.status = "Shipped"
+
+class Customer:
+    def _init_(self, name, email):
+        self.name = name
+        self.email = email
+        self.cart = ShoppingCart()
+        self.orders = []
+
+    def place_order(self):
+        order = Order(self.cart)
+
+        self.orders.append(order)
+        self.cart = ShoppingCart()
+        return order
+
+customer = Customer("Asha", "asha@example.com")
+laptop = Electronics("Laptop", 1000, 5, "Dell")
+shirt = Clothing("T-Shirt", 20, 10, "L")
+
+customer.cart.add_item(laptop, 1)
+customer.cart.add_item(shirt, 2)
+
+print("Total Price:", customer.cart.total_price())
+
+order = customer.place_order()
+print("Order Status:", order.status)
+order.process_order()
+print("Updated Order Status:", order.status)
